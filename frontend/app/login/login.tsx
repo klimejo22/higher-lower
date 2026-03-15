@@ -1,7 +1,4 @@
 import { useState } from "react";
-import logoDark from "./logo-dark.svg";
-import logoLight from "./logo-light.svg";
-
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
