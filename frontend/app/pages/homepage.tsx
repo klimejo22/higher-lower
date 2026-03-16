@@ -11,31 +11,38 @@ export function HomePage() {
             navigate("/login");
             return;
         }
-        const response = await fetch(
-            "https://www.junglediff.cz/higher-lower-api/auth.php",
-            {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    token: token
-                })
+        try {
+            const response = await fetch(
+                "https://www.junglediff.cz/higher-lower-api/auth.php",
+                {
+                    method: "POST",
+                    headers: {
+                    "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        token: token
+                    })
+                }
+            );    
+            const data = await response.json();
+            if (response.status === 401) {
+                navigate("/login")
+                return 
             }
-        );    
-        const data = await response.json();
-        if (response.status === 401) {
-            navigate("/login")
-            return 
-        }
-        if (!response.ok) {
-            alert("ERROR: " + data.error)
-            return
+            if (!response.ok) {
+                alert("ERROR: " + data.error)
+                return
+            }
+            console.log("USER Z AUTH: " + data.username)
+            setUser(data.username)
+            localStorage.setItem("username", data.username)
+        } catch (err) {
+            alert("An error occured" + err);
+            console.log(err)   
         }
               
         
-        console.log("USER Z AUTH: " + data.username)
-        setUser(data.username)
+        
     }
     const getPB = async () => {
         console.log("USER Z PB: " + user)
