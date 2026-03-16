@@ -1,9 +1,5 @@
 <?php
-// define = vytvoreni konstanty
-define('DB_NAME', 'd315069_metrodb');
-define('DB_USER', 'a315069_metrodb');
-define('DB_PASSWORD', 'Abcdef0_');
-define('DB_HOST', 'md393.wedos.net');
+require_once "secrets.php";
 
 global $db;
 $db = new PDO(

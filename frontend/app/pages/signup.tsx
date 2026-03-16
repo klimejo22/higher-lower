@@ -1,23 +1,24 @@
 import { useState } from "react";
-export function Login() {
-  const [email, setEmail] = useState("");
+import { useNavigate } from "react-router";
+export function SignUp() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch("https://www.junglediff.cz/higher-lower-api/login.php", {
+      const response = await fetch("https://www.junglediff.cz/higher-lower-api/signUp.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          email,
-          password
+          username: username,
+          password: password
         })
       });
 
@@ -29,14 +30,15 @@ export function Login() {
       console.log("Logged in:", data);
 
     } catch (err) {
-      setError("Incorrect username or password");
+      setError("An error occured");
+      console.log(err)
     }
   };
 
   return (
-    <div style={styles.container}>
+   <div style={styles.container}>
       <form style={styles.form} onSubmit={handleSubmit}>
-        <h2 style={styles.header}>Login</h2>
+        <h2 style={styles.header}>Sign up</h2>
 
         {error && <p style={styles.error}>{error}</p>}
         
@@ -45,15 +47,6 @@ export function Login() {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={styles.input}
-          required
-        />
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           style={styles.input}
           required
         />
@@ -68,10 +61,12 @@ export function Login() {
         />
 
         <button type="submit" style={styles.button}>
-          Log in
+          Sign up
         </button>
-        <button style={styles.button}>Create Account</button>
       </form>
+      <button style={styles.signupButton} onClick={() => navigate("/login")}>
+        Already have an account? Log in.
+      </button>
       
     </div>
   );
@@ -80,6 +75,7 @@ export function Login() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
@@ -111,6 +107,16 @@ const styles: Record<string, React.CSSProperties> = {
     background: "#2563eb",
     color: "white",
     cursor: "pointer"
+  },
+  signupButton: {
+    marginTop: "15px",
+    padding: "10px",
+    border: "none",
+    borderRadius: "5px",
+    background: "#10b981",
+    color: "white",
+    cursor: "pointer",
+    width: "300px"
   },
   error: {
     color: "red",
