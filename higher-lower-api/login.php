@@ -28,7 +28,6 @@ if (!isset($data['username'], $data['password'])) {
 
 $username = $data['username'];
 $passwordHash = HashPassword($data['password']);
-var_dump_plus($passwordHash);
 
 $checkSql = "SELECT id FROM users WHERE username = :username AND password = :password";
 $existingUser = query($checkSql, [

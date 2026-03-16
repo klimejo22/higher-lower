@@ -17,14 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
+$data = json_decode(file_get_contents("php://input"), true);
 
-if (empty($_GET["token"])) {
+if (empty($data['token'])) {
     http_response_code(400);
-    echo json_encode(["error" => "Missing required fields", "data" => $_GET]);
+    echo json_encode(["error" => "Missing required fields", "data" => $data]);
     exit;
 }
 
-$token = $_GET['token'];
+$token = $data['token'];
 $now = time();
 
 $sql = "SELECT u.username FROM tokens t JOIN users u ON t.pid = u.id WHERE t.token = :token AND t.exp > :now ORDER BY exp DESC LIMIT 1";

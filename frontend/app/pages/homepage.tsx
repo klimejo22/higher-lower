@@ -1,27 +1,51 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router";
 
 export function HomePage() {
     const navigate = useNavigate();
     const [personalBest, setPersonalBest] = useState<number>(0);
     const [user, setUser] = useState<string>("")
-    const autenthicateUser = () => {
-        const username = localStorage.getItem("username")
-        if (!username) {
+    const autenthicateUser = async () => {
+        const token = localStorage.getItem("token")
+        if (!token) {
             navigate("/login");
             return;
         }
-
-        setUser(username)
+        const response = await fetch(
+            "https://www.junglediff.cz/higher-lower-api/auth.php",
+            {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    token: token
+                })
+            }
+        );    
+        const data = await response.json();
+        if (response.status === 401) {
+            navigate("/login")
+            return 
+        }
+        if (!response.ok) {
+            alert("ERROR: " + data.error)
+            return
+        }
+              
+        
+        console.log("USER Z AUTH: " + data.username)
+        setUser(data.username)
     }
     const getPB = async () => {
+        console.log("USER Z PB: " + user)
         try {
             const response = await fetch(
                 "https://www.junglediff.cz/higher-lower-api/getPB.php?username=" + encodeURIComponent(user),
                 {
                     method: "GET"
                 }
-            );     
+            );    
 
             const data = await response.json();
             if (!response.ok) {
@@ -38,8 +62,12 @@ export function HomePage() {
     }
     useEffect(() => {
         autenthicateUser()
-        getPB()
     }, []);
+    useEffect(() => {
+        if (user !== "") {
+            getPB()
+        }
+    }, [user])
 
     const handleStartGame = () => {
         navigate("/game");
