@@ -30,6 +30,7 @@ export function SignUp() {
         return 
       }
       console.log("Logged in:", data);
+      localStorage.setItem("token", data.token)
       navigate("/index")
 
     } catch (err) {

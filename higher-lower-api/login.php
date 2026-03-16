@@ -28,6 +28,7 @@ if (!isset($data['username'], $data['password'])) {
 
 $username = $data['username'];
 $passwordHash = HashPassword($data['password']);
+var_dump_plus($passwordHash);
 
 $checkSql = "SELECT id FROM users WHERE username = :username AND password = :password";
 $existingUser = query($checkSql, [
@@ -47,4 +48,20 @@ if (empty($existingUser)) {
     exit;
 }
 
-echo json_encode(["message" => "Logged in"]);
+$token = generateToken();
+$userId = $existingUser->fetch(PDO::FETCH_ASSOC)["id"];
+$exp = time() + 10 * 60 * 60;
+$sql = "INSERT INTO tokens (token, pid, exp) VALUES (:token, :pid, :exp)";
+$result = query($sql, [
+    ':token' => $token,
+    ':pid'   => $userId,
+    ':exp'   => $exp
+]);
+
+if ($result instanceof PDOException) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database error"]);
+    exit;
+}
+
+echo json_encode(["token" => $token]);

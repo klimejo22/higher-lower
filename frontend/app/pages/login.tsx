@@ -33,6 +33,7 @@ export function Login() {
         return 
       }
       console.log("Logged in:", data);
+      localStorage.setItem("token", data.token)
       navigate("/")
 
     } catch (err) {

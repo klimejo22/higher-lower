@@ -40,7 +40,9 @@ if ($existingUser instanceof PDOException) {
     exit;
 }
 
-if (!empty($existingUser)) {
+$existingUser = $existingUser->fetch(PDO::FETCH_ASSOC);
+
+if ($existingUser !== false) {
     http_response_code(409);
     echo json_encode(["error" => "Username already exists"]);
     exit;
@@ -58,4 +60,30 @@ if ($result instanceof PDOException) {
     exit;
 }
 
-echo json_encode(["message" => "User created successfully"]);
+$newUser = query($checkSql, [
+    ':username' => $username
+]);
+
+if ($newUser instanceof PDOException) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database error"]);
+    exit;
+}
+
+$token = generateToken();
+$userId = $newUser->fetch(PDO::FETCH_ASSOC)["id"];
+$exp = time() + 10 * 60 * 60;
+$sql = "INSERT INTO tokens (token, pid, exp) VALUES (:token, :pid, :exp)";
+$result = query($sql, [
+    ':token' => $token,
+    ':pid'   => $userId,
+    ':exp'   => $exp
+]);
+
+if ($result instanceof PDOException) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database error"]);
+    exit;
+}
+
+echo json_encode(["token" => $token]);
