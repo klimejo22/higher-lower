@@ -20,20 +20,24 @@ export function Login() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          email,
-          password
+          username: username,
+          password: password
         })
       });
 
-      if (!response.ok) {
-        alert("Cannot login: Error code " + response.status)
-      }
+      
 
       const data = await response.json();
+      if (!response.ok) {
+        setError(data.error)
+        return 
+      }
       console.log("Logged in:", data);
+      navigate("/")
 
     } catch (err) {
-      setError("Incorrect username or password");
+      setError("An error occured");
+      console.log(err)
     }
   };
 

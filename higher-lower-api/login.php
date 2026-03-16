@@ -29,9 +29,10 @@ if (!isset($data['username'], $data['password'])) {
 $username = $data['username'];
 $passwordHash = HashPassword($data['password']);
 
-$checkSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
+$checkSql = "SELECT id FROM users WHERE username = :username AND password = :password";
 $existingUser = query($checkSql, [
-    ':username' => $username
+    ':username' => $username,
+    ":password" => $passwordHash,
 ]);
 
 if ($existingUser instanceof PDOException) {
@@ -40,22 +41,10 @@ if ($existingUser instanceof PDOException) {
     exit;
 }
 
-if (!empty($existingUser)) {
+if (empty($existingUser)) {
     http_response_code(409);
-    echo json_encode(["error" => "Username already exists"]);
+    echo json_encode(["error" => "User doesnt exist"]);
     exit;
 }
 
-$sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
-$result = query($sql, [
-    ':username' => $username,
-    ':password' => $passwordHash
-]);
-
-if ($result instanceof PDOException) {
-    http_response_code(500);
-    echo json_encode(["error" => "Failed to create user", "details" => $result->getMessage()]);
-    exit;
-}
-
-echo json_encode(["message" => "User created successfully"]);
+echo json_encode(["message" => "Logged in"]);

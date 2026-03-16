@@ -22,12 +22,15 @@ export function SignUp() {
         })
       });
 
-      if (!response.ok) {
-        alert("Cannot login: Error code " + response.status)
-      }
+      
 
       const data = await response.json();
+      if (!response.ok) {
+        setError(data.error)
+        return 
+      }
       console.log("Logged in:", data);
+      navigate("/index")
 
     } catch (err) {
       setError("An error occured");
