@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 type Frameworks = { // ChatGPT
   [framework: string]: string;
 };
+
 export function Game() {
   const navigate = useNavigate()
   const [frameworks, setFrameworks] = useState<Frameworks | null>(null);
@@ -10,6 +11,45 @@ export function Game() {
   const [lives, setLives] = useState<number>(3)
   const [score, setScore] = useState<number>(0)
   const [finished, setFinished] = useState<boolean>(false)
+  const [user, setUser] = useState<string>("")
+  const autenthicateUser = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+        navigate("/login");
+        return;
+    }
+    try {
+        const response = await fetch(
+          "https://www.junglediff.cz/higher-lower-api/auth.php",
+          {
+              method: "POST",
+              headers: {
+              "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                  token: token
+              })
+          }
+        );    
+        const data = await response.json();
+        if (response.status === 401) {
+          navigate("/login")
+          return 
+        }
+        if (!response.ok) {
+          alert("ERROR: " + data.error)
+          return
+        }
+        console.log("USER Z AUTH: " + data.username)
+        setUser(data.username)
+    } catch (err) {
+        alert("An error occured" + err);
+        console.log(err)   
+    }
+              
+        
+        
+    }
   
   // ChatGPT
   const frameworkNames = frameworks ? Object.keys(frameworks) : [];
@@ -45,6 +85,7 @@ export function Game() {
   };
 
   useEffect(() => {
+    autenthicateUser()
     newFrameworks()
   }, []);
 
@@ -57,7 +98,7 @@ export function Game() {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            username: localStorage.getItem("username"),
+            username: user,
             newScore: score
           })
         });

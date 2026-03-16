@@ -35,7 +35,6 @@ export function HomePage() {
             }
             console.log("USER Z AUTH: " + data.username)
             setUser(data.username)
-            localStorage.setItem("username", data.username)
         } catch (err) {
             alert("An error occured" + err);
             console.log(err)   
