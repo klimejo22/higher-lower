@@ -31,7 +31,7 @@ export function SignUp() {
       }
       console.log("Logged in:", data);
       localStorage.setItem("token", data.token)
-      navigate("/index")
+      navigate("/")
 
     } catch (err) {
       setError("An error occured");
