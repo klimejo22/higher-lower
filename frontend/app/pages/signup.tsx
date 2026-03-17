@@ -76,6 +76,7 @@ export function SignUp() {
   );
 }
 
+// ChatGPT
 const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",

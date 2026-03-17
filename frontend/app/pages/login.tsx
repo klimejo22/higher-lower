@@ -78,6 +78,8 @@ export function Login() {
     </div>
   );
 }
+
+// ChatGPT
 const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",
